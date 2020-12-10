@@ -88,6 +88,7 @@ class Lattice(object):
         return neighbors
 
     def update(self):
+        mutations = {}
         active_agent_row, active_agent_column = (random.randint(
                         0, self.size-1), random.randint(0, self.size-1))
         active_agent = self.lattice[active_agent_row][active_agent_column]
@@ -97,8 +98,10 @@ class Lattice(object):
         neighbour = random.choice(neighbours)
         prob = sum([active_agent[n] == neighbour[n] for n in range(
             self.no_features-1)])/self.no_features
-        diff_vector = [neighbour[n] != active_agent[n] for n in range(len(neighbour))]
-        diff_traits = [index for index in range(len(diff_vector)) if diff_vector[index] == 1]
+        diff_vector = [neighbour[n] != active_agent[n] for n in range(len(
+            neighbour))]
+        diff_traits = [index for index in range(
+            len(diff_vector)) if diff_vector[index] == 1]
         if random.random() >= prob and diff_traits != []:
             index = random.choice(diff_traits)
             active_agent[index] = neighbour[index]
@@ -117,12 +120,12 @@ class Lattice(object):
         for row in self.lattice:
             ans += str(row) + "\n"
         return ans
-    
 
-model = Lattice(20, 12, 25)
+
+model = Lattice(40, 3, 2)
 model.initialize()
 initial_cultures = (len(model.get_culture_count()), model.get_culture_count())
-iters = 1000000
+iters = 5000000
 for step in range(iters):
     model.update()
     if (iters - step) % 10000 == 0:
