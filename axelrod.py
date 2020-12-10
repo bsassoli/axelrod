@@ -88,7 +88,6 @@ class Lattice(object):
         return neighbors
 
     def update(self):
-
         active_agent_row, active_agent_column = (random.randint(
                         0, self.size-1), random.randint(0, self.size-1))
         active_agent = self.lattice[active_agent_row][active_agent_column]
@@ -98,11 +97,11 @@ class Lattice(object):
         neighbour = random.choice(neighbours)
         prob = sum([active_agent[n] == neighbour[n] for n in range(
             self.no_features-1)])/self.no_features
-        diff_traits = [neighbour[n] for n in range(
-            len(neighbour)) if neighbour[n] != active_agent[n]]
+        diff_vector = [neighbour[n] != active_agent[n] for n in range(len(neighbour))]
+        diff_traits = [index for index in range(len(diff_vector)) if diff_vector[index] == 1]
         if random.random() >= prob and diff_traits != []:
-            active_agent[random.randint(
-                0, self.no_features-1)] = random.choice(diff_traits)
+            index = random.choice(diff_traits)
+            active_agent[index] = neighbour[index]
             self.total_updates += 1
         return self.lattice, self.total_updates
 
@@ -110,27 +109,26 @@ class Lattice(object):
         return Counter(str(culture)
                        for row in self.lattice for culture in row)
 
+    def get_cumulative_mutations(self):
+        return self.total_updates
+
     def __str__(self):
         ans = "\n"
         for row in self.lattice:
             ans += str(row) + "\n"
         return ans
+    
 
-
-model = Lattice(5, 2, 4)
+model = Lattice(20, 12, 25)
 model.initialize()
 initial_cultures = (len(model.get_culture_count()), model.get_culture_count())
-iters = 100000
-for _ in range(iters):
+iters = 1000000
+for step in range(iters):
     model.update()
-    if (iters - _) % 1000 == 0:
-        print(iters - _)
-
-print("Mutations: " + str(model.update()[1]))
-final_cultures = (len(model.get_culture_count()), model.get_culture_count())
-print(initial_cultures)
-print(final_cultures)
-
+    if (iters - step) % 10000 == 0:
+        final_cultures = (len(model.get_culture_count()),
+                          model.get_culture_count())
+        print(f"Step: {step}. Mutations: {model.get_cumulative_mutations()}. Current cultures: {final_cultures[0]}")
 
 # Tests for neighbours
 # print(model.get_agent_neighbours(0, 0, model.lattice))
