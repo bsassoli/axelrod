@@ -88,7 +88,6 @@ class Lattice(object):
         return neighbors
 
     def update(self):
-        mutations = {}
         active_agent_row, active_agent_column = (random.randint(
                         0, self.size-1), random.randint(0, self.size-1))
         active_agent = self.lattice[active_agent_row][active_agent_column]
