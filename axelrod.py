@@ -14,10 +14,10 @@ class Lattice(object):
         """
         Initializes a NxN lattice populating each cell with an agent.
         """
-        for row in range(self.size):
+        for a in range(self.size):
             row = []
             for column in range(self.size):
-                agent = [random.randint(1, self.no_traits)
+                agent = [random.randint(0, self.no_traits)
                          for _ in range(self.no_features)]
                 row.append(agent)
             self.lattice.append(row)
@@ -88,6 +88,7 @@ class Lattice(object):
         return neighbors
 
     def update(self):
+        mutations = []
         active_agent_row, active_agent_column = (random.randint(
                         0, self.size-1), random.randint(0, self.size-1))
         active_agent = self.lattice[active_agent_row][active_agent_column]
@@ -95,17 +96,24 @@ class Lattice(object):
                             active_agent_row,
                             active_agent_column, self.lattice)
         neighbour = random.choice(neighbours)
-        prob = sum([active_agent[n] == neighbour[n] for n in range(
-            self.no_features-1)])/self.no_features
         diff_vector = [neighbour[n] != active_agent[n] for n in range(len(
             neighbour))]
         diff_traits = [index for index in range(
             len(diff_vector)) if diff_vector[index] == 1]
-        if random.random() >= prob and diff_traits != []:
+        prob = (self.no_features-len(diff_traits))/self.no_features
+        # print(f"Active: {active_agent}, neighbour; {neighbour}, prob: {
+        # prob}, diff_vector {diff_vector}, diff_traits: {diff_traits}")
+        if random.random() <= prob and diff_traits != []:
+            # print("Mutating")
             index = random.choice(diff_traits)
             active_agent[index] = neighbour[index]
+            mutations.append([(active_agent_row, active_agent_column),
+                             active_agent])
             self.total_updates += 1
-        return self.lattice, self.total_updates
+        return self.lattice, mutations, self.total_updates
+
+    def get_list(self):
+        return list(self.lattice)
 
     def get_culture_count(self):
         return Counter(str(culture)
@@ -121,6 +129,7 @@ class Lattice(object):
         return ans
 
 
+"""
 model = Lattice(40, 3, 2)
 model.initialize()
 initial_cultures = (len(model.get_culture_count()), model.get_culture_count())
@@ -130,7 +139,7 @@ for step in range(iters):
     if (iters - step) % 10000 == 0:
         final_cultures = (len(model.get_culture_count()),
                           model.get_culture_count())
-        print(f"Step: {step}. Mutations: {model.get_cumulative_mutations()}. Current cultures: {final_cultures[0]}")
+        print(f"Step: {step}. Current cultures: {final_cultures[0]}")
 
 # Tests for neighbours
 # print(model.get_agent_neighbours(0, 0, model.lattice))
@@ -142,3 +151,4 @@ for step in range(iters):
 # print(model.get_agent_neighbours(1, 0, model.lattice))
 # print(model.get_agent_neighbours(1, 2, model.lattice))
 # print(model.get_agent_neighbours(1, 1, model.lattice))
+"""
