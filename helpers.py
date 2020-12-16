@@ -30,13 +30,13 @@ def generate_new_color(existing_colors, pastel_factor=0.2):
 def make_color_snapshot(model):
     initial_cultures = (len(model.get_culture_count()),
                         model.get_culture_count())
-    color_mapping = {}
+    mapping = {}
     for index, culture in enumerate(initial_cultures[1].keys()):
-        color_mapping[culture] = generate_new_color(color_mapping.values())
-    plt.figure()
+        mapping[culture] = generate_new_color(mapping.values())
+    plt.gcf()
     for row in range(model.size):
         for col in range(model.size):
-            plt.scatter(row, col, s=128, color=tuple(color_mapping[
+            plt.scatter(row, col, s=128, color=tuple(mapping[
                 str(model.lattice[row][col])]), marker="H")
     plt.show()
 
