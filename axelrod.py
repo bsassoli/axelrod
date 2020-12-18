@@ -122,6 +122,21 @@ class Lattice(object):
     def get_cumulative_mutations(self):
         return self.total_updates
 
+    def equilibrium(self):
+        for row in range(self.size):
+            for column in range(self.size):
+                neighbours = self.get_agent_neighbours(
+                             row, column, self.lattice)
+                active_agent = self.lattice[row][column]
+                for neighbour in neighbours:
+                    diff_vector = sum([neighbour[n] != active_agent[
+                                  n] for n in range(len(neighbour))])
+                    if diff_vector == self.no_traits:
+                        return True
+                    elif diff_vector == 0:
+                        return True
+        return False
+
     def __str__(self):
         ans = "\n"
         for row in self.lattice:
@@ -129,10 +144,12 @@ class Lattice(object):
         return ans
 
 
-"""
-model = Lattice(40, 3, 2)
+model = Lattice(4, 12, 12)
 model.initialize()
-initial_cultures = (len(model.get_culture_count()), model.get_culture_count())
+print(model)
+print(model.equilibrium())
+
+"""
 iters = 5000000
 for step in range(iters):
     model.update()
