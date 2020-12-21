@@ -33,7 +33,7 @@ def make_color_snapshot(model):
     mapping = {}
     for index, culture in enumerate(initial_cultures[1].keys()):
         mapping[culture] = generate_new_color(mapping.values())
-    plt.gcf()
+    plt.figure()
     for row in range(model.size):
         for col in range(model.size):
             plt.scatter(row, col, s=128, color=tuple(mapping[

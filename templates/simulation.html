@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+<h1>SIMULATION</h1>
+<h3 id="pollo">FAI STA CAZZO DI GRIGLIA MADONNA</h3>
+<h2> DATASETS {{ dataJS | tojson }} </h2>
+<canvas id="myChart"></canvas>
+<h2>SIZE {{ size }}</h2>
+<h3 id = "verifica">""</h3>
+<table id="grid">
+</table>
+<script>
+    var size = "{{ size }}";
+    var lattice ="{{ lattice }}"
+</script>
+<!-- <script src="../static/scripts2.js"> 
+</script>
+<script src="../static/chart.js"></script>-->
+
+{% endblock %}

@@ -15,20 +15,22 @@ def run_simulations(no_of_runs, iterations, size_of_grid,
         data = []
         for step in range(iters):
             model.update()
-            if model.equilibrium() is True:
-                print("Equilibrium")
-                return 1
             if (iters - step) % 10000 == 0:
                 final_cultures = (len(model.get_culture_count()),
                                   model.get_culture_count())
                 steps.append(step)
                 data.append(final_cultures[0])
-                print(f"Step: {step}. Current cultures: {final_cultures[0]}")
+                if model.equilibrium() is True:
+                    print("Equilibrium")
+                    break
+                else:
+                    print(
+                        f"Step: {step}. Current cultures: {final_cultures[0]}")
         plt.plot(steps, data)
     plt.show()
 
 
-run_simulations(4, 1000000, 20, 3, 20)
+run_simulations(3, 4000000, 40, 3, 4)
 # graph = generate_graph(model)
 # print(nx.get_node_attributes(graph, "culture").values())
 # print(graph.nodes[1]["culture"])
