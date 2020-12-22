@@ -15,11 +15,32 @@
 </head>
 
 <body>
-    <h1>NONHOTITOLO</h1>
-    <canvas id="myChart" width="1600" height="900"></canvas>
+    <h1>Axelrod: modeling cultural dissemination</h1>
+    <h2>Choose parameters</h2>
+    <form id="paramPicker" action="/" method="post">
+        Grid size:
+        <input type="number" id="gridSize" name="size" min="2" max="100" value="4">
+        Number of cultures:
+        <input type="number" id="no_features" name="no_features" min="6" , max="6" value="6">
+        Number of traits:
+        <input type="number" id="no_traits" name="no_traits" min="1" , max="16" value="9">
+        <input type="submit">
+    </form>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2">
+                <h2 id="headline">params here</h2>
+                <canvas id="myChart"></canvas>
+            </div>
+            <div class="col-md-2">
+                <h2 id="headline2">params here</h2>
+                <canvas id="myChart2"></canvas>
+            </div>
+        </div>
+    </div>
     <script type="text/javascript">
-        var steps = {{ steps }};
-        var cultures = {{ cultures }}
+        /* var steps = {{ steps }};
+        var cultures = {{ cultures }} */
     </script>
     <script src="../static/test2.js"> </script>
 </body>

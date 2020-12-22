@@ -4,7 +4,7 @@ $(document).ready(function () {
         data: {
             labels: [],
             datasets: [{
-                label: "Culture dissemination",
+                label: "Cultures",
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgb(255, 99, 132)',
                 data: [],
@@ -15,7 +15,7 @@ $(document).ready(function () {
             responsive: true,
             title: {
                 display: true,
-                text: 'Creating Real-Time Charts with Flask'
+                text: 'AXELROD CULTURE DISSEMINATION MODEL'
             },
             tooltips: {
                 mode: 'index',
@@ -30,14 +30,14 @@ $(document).ready(function () {
                     display: true,
                     scaleLabel: {
                         display: true,
-                        labelString: 'Time'
+                        labelString: 'Timestep'
                     }
                 }],
                 yAxes: [{
                     display: true,
                     scaleLabel: {
                         display: true,
-                        labelString: 'Value'
+                        labelString: 'No. of cultures'
                     }
                 }]
             }
@@ -52,12 +52,23 @@ $(document).ready(function () {
 
     source.onmessage = function (event) {
         const data = JSON.parse(event.data);
+        console.log("Banzo")
+        change = document.getElementById("headline"); 
+        change.innerText=data.step;
         if (config.data.labels.length === 20) {
             config.data.labels.shift();
             config.data.datasets[0].data.shift();
         }
-        config.data.labels.push(data.time);
-        config.data.datasets[0].data.push(data.value);
+        config.data.labels.push(data.step);
+        config.data.datasets[0].data.push(data.cultures);
         lineChart.update();
+        if (data.step === -1000) {
+            console.log("Banzai!!!!!!!")
+            change = document.getElementById("headline"); 
+            change.innerText="POLLO";
+            lineChart.stop();
+            source.close();
+        }
     }
+    
 });
