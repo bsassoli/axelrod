@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, json
+from flask import Flask, render_template, \
+    Response, json, request, redirect, url_for
 from axelrod import Lattice
-
 # Configure application
 app = Flask(__name__)
 # Ensure templates are auto-reloaded
@@ -20,32 +20,43 @@ def after_request(response):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        """
         size = int(request.form.get('size'))
         no_features = int(request.form.get('no_features'))
         no_traits = int(request.form.get('no_traits'))
-        for _ in range(3):
-        """
-    model = Lattice(10, 3, 3)
-    model.initialize()
-    iters = 1000
-    steps = []
-    data = []
-    for step in range(iters):
-        model.update()
-        if (iters - step) % 10000 == 0:
-            final_cultures = (len(model.get_culture_count()),
-                              model.get_culture_count())
-            steps.append(step)
-            data.append(final_cultures[0])
-            if model.equilibrium() is True:
-                print("Equilibrium")
-                break
-            else:
-                print(
-                    f"Step: {step}. Current cultures: {final_cultures[0]}")
-    return render_template("index.html",
-                           steps=steps, cultures=data)
+        return redirect(url_for('index', size=size,
+                                no_features=no_features, no_traits=no_traits))
+    return render_template('index.html')
+
+
+@app.route('/simulation')
+def simulation():
+    size = request.args.get('size')
+    return render_template('simulation.html', size=size)
+
+
+@app.route('/chart-data', methods=['GET', 'POST'])
+def chart_data():
+    def generate_chart_data():
+        model = Lattice(10, 12, 4)
+        model.initialize()
+        iters = 10000000
+        while not model.equilibrium() is True:
+            for step in range(iters):
+                model.update()
+                if (iters - step) % 10000 == 0:
+                    final_cultures = (len(model.get_culture_count()),
+                                      model.get_culture_count())
+                    if model.equilibrium() is True:
+                        print("Equilibrium")
+                        json_data = json.dumps(
+                            {'step': -1000, 'cultures': 0})
+                        yield f"data:{json_data}\n\n"
+                    else:
+                        json_data = json.dumps(
+                            {'step': step,
+                             'cultures': final_cultures[0]})
+                        yield f"data:{json_data}\n\n"
+    return Response(generate_chart_data(), mimetype='text/event-stream')
 
 
 if __name__ == '__main__':
