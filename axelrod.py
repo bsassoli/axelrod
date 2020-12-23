@@ -44,7 +44,7 @@ class Lattice(object):
         return self.lattice
 
     def get_agent_neighbours(self, row, column, lattice):
-        """
+        """ Get an agent's neighbours.
         Arguments:
             row (int): the agent's X position in a lattice
             column (int): the agent's Y position in a lattice
@@ -117,27 +117,32 @@ class Lattice(object):
         return neighbors
 
     def update(self):
-        """
-        Runs a single update of the lattice.
-
+        """Runs a single update of the lattice.
+        Returns:
+            The updated lattice (a list), a list of mutations,
+            and tracks the cumulative no. of updates to the model (int).
         """
         mutations = []
+        # pick a random cell in the grid and make it the active agent
         active_agent_row, active_agent_column = (random.randint(
                         0, self.size-1), random.randint(0, self.size-1))
         active_agent = self.lattice[active_agent_row][active_agent_column]
         neighbours = self.get_agent_neighbours(
                             active_agent_row,
                             active_agent_column, self.lattice)
+        # from the list of neighbours select a random neigbour
         neighbour = random.choice(neighbours)
+        # compute how many features the agent and the neighbour differ in
         diff_vector = [neighbour[n] != active_agent[n] for n in range(len(
             neighbour))]
+        # get a list of traits for each feature in which they differ
         diff_traits = [index for index in range(
             len(diff_vector)) if diff_vector[index] == 1]
+        # compute the probability they will interact
         prob = (self.no_features-len(diff_traits))/self.no_features
-        # print(f"Active: {active_agent}, neighbour; {neighbour}, prob: {
-        # prob}, diff_vector {diff_vector}, diff_traits: {diff_traits}")
+        # if they do interact then substitute one of the agent's differing
+        # traits by picking a random one from the neighbours
         if random.random() <= prob and diff_traits != []:
-            # print("Mutating")
             index = random.choice(diff_traits)
             active_agent[index] = neighbour[index]
             mutations.append([(active_agent_row, active_agent_column),
@@ -156,6 +161,13 @@ class Lattice(object):
         return self.total_updates
 
     def equilibrium(self):
+        """Checks if the model has reached equilibrium.
+        If all cell in the model have either completely identical
+        or completely different neighbours then no update is possible.
+
+        Returns:
+            a bool.
+        """
         for row in range(self.size):
             for column in range(self.size):
                 neighbours = self.get_agent_neighbours(
