@@ -2,52 +2,139 @@
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
+    <link href="/static/css/styles.css" rel="stylesheet">
+    <title>Axelrod</title>
+</head>
+
+<body>
+    <h1>Axelrod: modeling cultural dissemination</h1>
+
+    <div class="container">
+        <div class="row">
+            <form id="paramPicker" method="post">
+                <label>Select max value:
+                    <input type="number" name="max-value">
+                </label>
+                <label>Select number of features:
+                    <input type="number" name="no_features">
+                </label>
+                <label>Select number of traits:
+                    <input type="number" name="no_traits">
+                </label>
+            </form>
+            <button type="submit" form="paramPicker" value="Submit">START SIMULATION</button>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <h3 id="headline"> Simulating model of size {{ max_value }}</h3>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="canvas2"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!--suppress JSUnresolvedLibraryURL -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <!--suppress JSUnresolvedLibraryURL -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <!--suppress JSUnresolvedLibraryURL -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
-    
-    <!-- CSS only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/styles.css">
-    <title>
-        Prova
-    </title>
-</head>
+    <script>
+        $(document).ready(function () {
+        const config = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: false,
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: [],
+                    fill: false,
+                }],
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Simulating culture dissemination'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Step'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'No. of cultures'
+                        }
+                    }]
+                }
+            }
+        };
 
-<body>
-    <h1>Axelrod: modeling cultural dissemination</h1>
-    <h2>Choose parameters</h2>
-    <form id="paramPicker" action="/" method="post">
-        Grid size:
-        <input type="number" id="gridSize" name="size" min="2" max="100" value="4">
-        Number of cultures:
-        <input type="number" id="no_features" name="no_features" min="6" , max="6" value="6">
-        Number of traits:
-        <input type="number" id="no_traits" name="no_traits" min="1" , max="16" value="9">
-        <input type="submit">
-    </form>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <h2 id="headline">params here</h2>
-                <div class="chart-container">
-                    <canvas id="myChart"></canvas>
-                </div>
-            </div>
-            <div class="col">
-                <h2 id="headline2">BANZAI!!!</h2>
-                <div class="chart-container">
-                    <canvas id="myChart2"></canvas>
-                </div>
-            </div>  
-        </div>
-    </div>
+        const context = document.getElementById('canvas').getContext('2d');
+        const lineChart = new Chart(context, config);
+
+        let source;
+        {% if max_value %}
+            source = new EventSource("/chart-data?max-value={{ max_value }}&no_features={{ no_features }}&no_traits={{ no_traits }}");
+        {% else %}
+            source = new EventSource("/chart-data");
+        {% endif %}
+
+
+        source.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (config.data.labels.length === 20) {
+                config.data.labels.shift();
+                config.data.datasets[0].data.shift();
+            }
+            config.data.labels.push(data.time);
+            config.data.datasets[0].data.push(data.value);
+            lineChart.update();
+            if (data.step === -1000) {
+            change = document.getElementById("headline");
+            change.innerText="Equilibrium reached";
+            lineChart.stop();
+            source.close();
+            }
+        }
+    });
+    </script>
     
-    <script src="../static/test2.js"> </script>
+    
+    <script src="{{ url_for('static', filename='js/test2.js') }}"></script>
 </body>
 
 </html>

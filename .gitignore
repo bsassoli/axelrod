@@ -208,3 +208,4 @@ final50/share/doc/networkx-2.5/examples/subclass/README.txt
 final50/share/jupyter/nbextensions/plotlywidget/extension.js
 final50/share/jupyter/nbextensions/plotlywidget/index.js
 .DS_Store
+.vscode
