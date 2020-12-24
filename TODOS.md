@@ -2,9 +2,8 @@
 ### Logic of this type of chart is compare multiple stochastic runs of the same params
 - [x]  ~~make chart break once model reaches equilibrium (might make sense to just have a `stop simulation` button)~~
 - [] maybe make a `restart` simulation button?
-- [] resize chart
-- [] chart should iterate for various model runs just like it does in `run_simulations` in `simulation.py`???
-- [] make model get args from input form
+- [x] ~~resize chartv
+- [x] ~~make model get args from input form~~
 
 
 ## Implement color charting evolution of models

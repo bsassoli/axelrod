@@ -1,0 +1,15 @@
+.chart-container {
+    width: 900px;
+    height: 1200px
+}
+
+h1 {
+    font-family: Raleway;
+    text-align: center;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 40px;
+    text-transform: uppercase;
+    color: #04668C;
+    ;
+}
