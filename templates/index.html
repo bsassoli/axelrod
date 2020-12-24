@@ -10,43 +10,43 @@
 </head>
 
 <body>
-    <h1>Axelrod: modeling cultural dissemination</h1>
-
+    <h1 class="display-2">Axelrod</h1>
+    <h2 class="display-4"> Modeling cultural dissemination</h2>
+    <hr>
+    <br>
     <div class="container">
         <div class="row">
+            <div class="col">
+            <h4>Choose your model:</h4>
             <form id="paramPicker" method="post">
-                <label>Select max value:
+                <div class="form-group">
+                <label>Select grid size:
                     <input type="number" name="max-value">
                 </label>
+                </div>
+                <div class="form-group">
                 <label>Select number of features:
                     <input type="number" name="no_features">
                 </label>
+                </div>
+                <div class="form-group">
                 <label>Select number of traits:
                     <input type="number" name="no_traits">
                 </label>
-            </form>
+                </div>
             <button type="submit" form="paramPicker" value="Submit">START SIMULATION</button>
+            </form>
+            <br>
+            <p id="parameters"> Simulating model of size {{ max_value }} with {{ no_features }} features</p>
+            <p id="mutations"></p>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <h3 id="headline"> Simulating model of size {{ max_value }}</h3>
-                <div class="card">
-                    <div class="card-body">
+        <div class="col justify-content-md-center">
                         <div class="chart-container">
                             <canvas id="canvas"></canvas>
                         </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="canvas2"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    
             </div>
+        
         </div>
     </div>
     
@@ -63,9 +63,9 @@
             data: {
                 labels: [],
                 datasets: [{
-                    label: false,
-                    backgroundColor: 'rgb(255, 99, 132)',
-                    borderColor: 'rgb(255, 99, 132)',
+                    label: "No. of cultures in model",
+                    backgroundColor: 'teal',
+                    borderColor: 'black',
                     data: [],
                     fill: false,
                 }],
@@ -73,7 +73,7 @@
             options: {
                 responsive: true,
                 title: {
-                    display: true,
+                    display: false,
                     text: 'Simulating culture dissemination'
                 },
                 tooltips: {
@@ -122,10 +122,12 @@
             }
             config.data.labels.push(data.time);
             config.data.datasets[0].data.push(data.value);
+            change2 = document.getElementById("mutations");
+            change2.innerText=data.mutations + " mutations took place so far.";
             lineChart.update();
-            if (data.step === -1000) {
-            change = document.getElementById("headline");
-            change.innerText="Equilibrium reached";
+            if (data.cultures === 'equilibrium') {
+            change1 = document.getElementById("parameters");
+            change1.innerText="Equilibrium reached in " + data.step + " steps.";
             lineChart.stop();
             source.close();
             }
@@ -133,8 +135,10 @@
     });
     </script>
     
-    
-    <script src="{{ url_for('static', filename='js/test2.js') }}"></script>
+
+    <!--
+        <script src="{{ url_for('static', filename='js/test2.js') }}"></script> 
+    -->
 </body>
 
 </html>

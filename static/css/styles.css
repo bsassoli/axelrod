@@ -1,14 +1,23 @@
 .chart-container {
-    width: 900px;
-    height: 1200px
+    width: 800px;
+    height: 800px
 }
 
-h1 {
+.row {
+    display: flex;
+}
+
+.column {
+    flex: 50%;
+}
+@font-face {
+    
+}
+h1 , h2 {
     font-family: Raleway;
     text-align: center;
     margin-right: auto;
     margin-left: auto;
-    margin-top: 40px;
     text-transform: uppercase;
     color: #04668C;
     ;

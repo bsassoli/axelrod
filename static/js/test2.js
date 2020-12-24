@@ -1,4 +1,4 @@
-$(document).ready(function () {
+window.onload=function () {
         const config = {
             type: 'line',
             data: {
