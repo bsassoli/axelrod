@@ -1,3 +1,23 @@
+@font-face {
+    font-family: 'Intro-Free';
+    src: url(../css/Fonts/Intro-Free/OTF/IntroDemo-BlackInlineCAPS.otf);
+}
+
+@font-face {
+    font-family: 'CodePro';
+    src: url(../css/Fonts/CodePro/OTF/CodeDemo-Bold.otf);
+}
+
+body {
+    font-family: 'Raleway', sans-serif;    
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+
+
 .chart-container {
     width: 800px;
     height: 800px
@@ -10,15 +30,17 @@
 .column {
     flex: 50%;
 }
-@font-face {
-    
-}
-h1 , h2 {
-    font-family: Raleway;
+
+h1, h2 {
+    font-family: "Intro-Free";
     text-align: center;
     margin-right: auto;
-    margin-left: auto;
+    margin-left: auto;  
     text-transform: uppercase;
     color: #04668C;
     ;
 }
+h2 {
+    font-family: "CodePro"
+}
+

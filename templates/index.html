@@ -17,7 +17,7 @@
     <div class="container">
         <div class="row">
             <div class="col">
-            <h4>Choose your model:</h4>
+            <h5>Choose your model:</h5>
             <form id="paramPicker" method="post">
                 <div class="form-group">
                 <label>Select grid size:
@@ -34,10 +34,14 @@
                     <input type="number" name="no_traits">
                 </label>
                 </div>
-            <button type="submit" form="paramPicker" value="Submit">START SIMULATION</button>
+            <button class="btn btn-primary" type="submit" form="paramPicker" value="Submit">START SIMULATION</button>
             </form>
             <br>
+            {% if max_value %}
             <p id="parameters"> Simulating model of size {{ max_value }} with {{ no_features }} features</p>
+            {% else %}
+            <p id="parameters"></p>
+            {% endif %}
             <p id="mutations"></p>
         </div>
         <div class="col justify-content-md-center">
@@ -64,8 +68,8 @@
                 labels: [],
                 datasets: [{
                     label: "No. of cultures in model",
-                    backgroundColor: 'teal',
-                    borderColor: 'black',
+                    backgroundColor: "darkblue",
+                    borderColor: "darkblue",
                     data: [],
                     fill: false,
                 }],

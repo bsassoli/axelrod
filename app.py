@@ -44,7 +44,8 @@ def chart_data():
                         if model.equilibrium() is True:
                             print('equilibrium')
                             json_data = json.dumps(
-                                {'step': step, 'cultures': 'equilibrium'})
+                                {'step': step, 'cultures': 'equilibrium',
+                                 'mutations': model.get_cumulative_mutations()})
                             yield f"data:{json_data}\n\n"
                         else:
                             json_data = json.dumps({'time': step, 'value': len(
