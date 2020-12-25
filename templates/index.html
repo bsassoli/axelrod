@@ -17,43 +17,42 @@
     <div class="container">
         <div class="row">
             <div class="col">
-            <h5>Choose your model:</h5>
-            <form id="paramPicker" method="post">
-                <div class="form-group">
-                <label>Select grid size:
-                    <input type="number" name="max-value">
-                </label>
-                </div>
-                <div class="form-group">
-                <label>Select number of features:
-                    <input type="number" name="no_features">
-                </label>
-                </div>
-                <div class="form-group">
-                <label>Select number of traits:
-                    <input type="number" name="no_traits">
-                </label>
-                </div>
-            <button class="btn btn-primary" type="submit" form="paramPicker" value="Submit">START SIMULATION</button>
-            </form>
-            <br>
-            {% if max_value %}
-            <p id="parameters"> Simulating model of size {{ max_value }} with {{ no_features }} features</p>
-            {% else %}
-            <p id="parameters"></p>
-            {% endif %}
-            <p id="mutations"></p>
-        </div>
-        <div class="col justify-content-md-center">
-                        <div class="chart-container">
-                            <canvas id="canvas"></canvas>
-                        </div>
-                    
+                <h5>Choose your model:</h5>
+                <form id="paramPicker" method="post">
+                    <div class="form-group">
+                        <label>Select grid size:
+                            <input type="number" name="max-value">
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Select number of features:
+                            <input type="number" name="no_features">
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Select number of traits:
+                            <input type="number" name="no_traits">
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" type="submit" form="paramPicker" value="Submit">START
+                        SIMULATION</button>
+                </form>
+                <br>
+                {% if max_value %}
+                <p id="parameters"> Simulating model of size {{ max_value }} with {{ no_features }} features and
+                    {{ no_traits}} traits.</p>
+
+                {% endif %}
+                <p id="mutations"></p>
             </div>
-        
+            <div class="col justify-content-md-center">
+                <div class="chart-container">
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
         </div>
     </div>
-    
+
     <!--suppress JSUnresolvedLibraryURL -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <!--suppress JSUnresolvedLibraryURL -->
@@ -62,87 +61,82 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
     <script>
         $(document).ready(function () {
-        const config = {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: "No. of cultures in model",
-                    backgroundColor: "darkblue",
-                    borderColor: "darkblue",
-                    data: [],
-                    fill: false,
-                }],
-            },
-            options: {
-                responsive: true,
-                title: {
-                    display: false,
-                    text: 'Simulating culture dissemination'
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true
-                },
-                scales: {
-                    xAxes: [{
-                        display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Step'
-                        }
+            const config = {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: "No. of cultures in model",
+                        backgroundColor: "darkblue",
+                        borderColor: "darkblue",
+                        data: [],
+                        fill: false,
                     }],
-                    yAxes: [{
-                        display: true,
-                        scaleLabel: {
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: false,
+                        text: 'Simulating culture dissemination'
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
+                    },
+                    scales: {
+                        xAxes: [{
                             display: true,
-                            labelString: 'No. of cultures'
-                        }
-                    }]
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Step'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'No. of cultures'
+                            }
+                        }]
+                    }
+                }
+            };
+
+            const context = document.getElementById('canvas').getContext('2d');
+            const lineChart = new Chart(context, config);
+
+            let source; 
+            {% if max_value %}
+            source = new EventSource("/chart-data?max-value={{ max_value }}&no_features={{ no_features }}&no_traits={{ no_traits }}"); 
+            {% else %}
+            source = new EventSource("/chart-data"); 
+            {% endif %}
+
+            source.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                if (config.data.labels.length === 20) {
+                    config.data.labels.shift();
+                    config.data.datasets[0].data.shift();
+                }
+                config.data.labels.push(data.time);
+                config.data.datasets[0].data.push(data.value);
+                change2 = document.getElementById("mutations");
+                change2.innerText = data.mutations + " mutations took place so far.";
+                lineChart.update();
+                if (data.cultures === 'equilibrium') {
+                    change1 = document.getElementById("parameters");
+                    change1.innerText = "Equilibrium reached in " + data.step + " steps.";
+                    lineChart.stop();
+                    source.close();
                 }
             }
-        };
-
-        const context = document.getElementById('canvas').getContext('2d');
-        const lineChart = new Chart(context, config);
-
-        let source;
-        {% if max_value %}
-            source = new EventSource("/chart-data?max-value={{ max_value }}&no_features={{ no_features }}&no_traits={{ no_traits }}");
-        {% else %}
-            source = new EventSource("/chart-data");
-        {% endif %}
-
-
-        source.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-            if (config.data.labels.length === 20) {
-                config.data.labels.shift();
-                config.data.datasets[0].data.shift();
-            }
-            config.data.labels.push(data.time);
-            config.data.datasets[0].data.push(data.value);
-            change2 = document.getElementById("mutations");
-            change2.innerText=data.mutations + " mutations took place so far.";
-            lineChart.update();
-            if (data.cultures === 'equilibrium') {
-            change1 = document.getElementById("parameters");
-            change1.innerText="Equilibrium reached in " + data.step + " steps.";
-            lineChart.stop();
-            source.close();
-            }
-        }
-    });
+        });
     </script>
-    
 
-    <!--
-        <script src="{{ url_for('static', filename='js/test2.js') }}"></script> 
-    -->
 </body>
 
 </html>

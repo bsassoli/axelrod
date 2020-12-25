@@ -50,11 +50,7 @@ def generate_graph(model):
             n += 1
             agent = g[row][col]
             G.add_node(n, culture=agent)
-    """
-    weights = [node for node in G.nodes]
-    print(weights)
     plt.figure()
     nx.draw(G, with_labels=True)
     plt.show()
-    """
     return G
