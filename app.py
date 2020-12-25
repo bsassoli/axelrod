@@ -34,22 +34,25 @@ def chart_data():
     model.initialize()
 
     def generate_random_data():
-        iters = 10000000
+        step = 0
         if max_value > 0:
             while True:
-                for step in range(iters):
-                    model.update()
-                    if (iters - step) % 10000 == 0:
-                        print(model.size, model.no_features, model.no_traits)
-                        if model.equilibrium() is True:
-                            print('equilibrium')
-                            json_data = json.dumps({'step': step, 'cultures': 'equilibrium', 'mutations': model.get_cumulative_mutations()})
-                            yield f"data:{json_data}\n\n"
-                        else:
-                            json_data = json.dumps({'time': step, 'value': len(
-                                model.get_culture_count()),
-                                'mutations': model.get_cumulative_mutations()})
-                            yield f"data:{json_data}\n\n"
+                model.update()
+                step += 1
+                if step % 10000 == 0:
+                    print(model.size, model.no_features, model.no_traits)
+                    if model.equilibrium() is True:
+                        print('equilibrium')
+                        json_data = json.dumps({
+                                    'step': step, 'cultures':
+                                    'equilibrium', 'mutations':
+                                    model.get_cumulative_mutations()})
+                        yield f"data:{json_data}\n\n"
+                    else:
+                        json_data = json.dumps({'time': step, 'value': len(
+                            model.get_culture_count()),
+                            'mutations': model.get_cumulative_mutations()})
+                        yield f"data:{json_data}\n\n"
 
     return Response(generate_random_data(), mimetype='text/event-stream')
 

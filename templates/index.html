@@ -38,19 +38,16 @@
             </form>
             <br>
             {% if max_value %}
-            <p id="parameters"> Simulating model of size {{ max_value }} with {{ no_features }} features</p>
-            {% else %}
-            <p id="parameters"></p>
+            <p id="parameters"> Simulating model of size {{ max_value }} with {{ no_features }} features and {{ no_traits}} traits.</p>
+            
             {% endif %}
             <p id="mutations"></p>
         </div>
         <div class="col justify-content-md-center">
                         <div class="chart-container">
                             <canvas id="canvas"></canvas>
-                        </div>
-                    
+                        </div>  
             </div>
-        
         </div>
     </div>
     
