@@ -30,7 +30,14 @@ def run_simulations(no_of_runs, iterations, size_of_grid,
     plt.show()
 
 
-run_simulations(3, 4000000, 40, 3, 4)
-# graph = generate_graph(model)
-# print(nx.get_node_attributes(graph, "culture").values())
-# print(graph.nodes[1]["culture"])
+# run_simulations(3, 4000000, 40, 3, 4)
+"""
+model = Lattice(4, 2, 3)
+model.initialize()
+for _ in range(100):
+    model.update()
+    make_color_snapshot(model)
+graph = generate_graph(model)
+print(model)
+print(graph)
+"""
