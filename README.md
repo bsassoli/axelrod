@@ -4,8 +4,7 @@
 
 
 ### Summary 
-http://axelrod.herokuapp.com
-A webapp simulating Robert Axelrod model of cultural interaction, developed in `Python`,`Flask`, and `Javascript` using `chart.js`.
+http://axelrod.herokuapp.com is a webapp simulating Robert Axelrod model of cultural interaction, developed in `Python`,`Flask`, and `Javascript` using `chart.js`.
 
 ### Background
 
