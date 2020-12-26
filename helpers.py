@@ -1,6 +1,7 @@
 import random
 import networkx as nx
 import matplotlib.pyplot as plt
+from axelrod import Lattice
 
 
 def get_random_color(pastel_factor=0.5):
@@ -49,8 +50,33 @@ def generate_graph(model):
         for col in range(len(g[row])):
             n += 1
             agent = g[row][col]
-            G.add_node(n, culture=agent)
+            G.add_node(n, culture=agent, position=(row, col))
+    """
     plt.figure()
     nx.draw(G, with_labels=True)
     plt.show()
+    """
     return G
+
+
+model = Lattice(4, 2, 3)
+model.initialize()
+g = generate_graph(model)
+
+positions_dic = nx.get_node_attributes(g, 'position')
+cultures_dic = nx.get_node_attributes(g, 'culture')
+neighbor_dic = {}
+for node in g.nodes:
+    neighbor_dic[node] = model.get_agent_neighbours(
+        positions_dic[node][0], positions_dic[node][1], model.lattice)
+print(neighbor_dic)
+weights = {}
+for agent in g.nodes:
+    # map agent to neighbours with attribute weight
+    # so a dict with key = agent and values = [neighbour, weight] will do
+    # how to get neighbour position??????
+    """
+    culture = cultures_dic[agent]
+    neighbour_cultures = neighbor_dic[agent]
+    for neighbour in neighbour_cultures:
+    """

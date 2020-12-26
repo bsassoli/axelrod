@@ -27,25 +27,31 @@ class Lattice(object):
         self.no_traits = no_traits
         self.lattice = []
         self.total_updates = 0
+        self.dict = {}
 
     def initialize(self):
         """Initializes a NxN Lattice populating each cell with an agent.
 
         Returns:
-            A list of lists.
+            A list of lists, e.g. a NXN 2-D array. Each item is a dictionary
+            with position in the array as key and culture as value.
         """
         for a in range(self.size):
             row = []
             for column in range(self.size):
                 agent = [random.randint(0, self.no_traits)
                          for _ in range(self.no_features)]
-                row.append(agent)
+                row.append([(a, column), agent])
+                self.dict[(a, column)] = agent
             self.lattice.append(row)
-        return self.lattice
+        return self.lattice, self.dict
 
-    def get_agent_neighbours(self, row, column, lattice):
+    def get_agent_culture(self, row, col):
+        return self.dict[(row, col)]
+
+    def get_agent_neighbours(self, row, column):
         """ Get an agent's neighbours.
-        Arguments:
+        Arguments:nt
             row (int): the agent's X position in a lattice
             column (int): the agent's Y position in a lattice
             lattice: the 2x2 array to be searched
@@ -53,10 +59,9 @@ class Lattice(object):
         Returns:
             a list of all the adjacent agents for the given position
         """
+        lattice = self.lattice
         size = len(lattice)-1
         neighbors = []
-        if column not in range(len(lattice)) or row not in range(len(lattice)):
-            print("Not in grid")
         # top left
         if column == 0 and row == 0:
             neighbors.append(lattice[row][column+1])
@@ -129,32 +134,30 @@ class Lattice(object):
         active_agent = self.lattice[active_agent_row][active_agent_column]
         neighbours = self.get_agent_neighbours(
                             active_agent_row,
-                            active_agent_column, self.lattice)
+                            active_agent_column)
         # from the list of neighbours select a random neigbour
-        neighbour = random.choice(neighbours)
+        neighbour = random.choice(neighbours)[1]
         # compute how many features the agent and the neighbour differ in
-        diff_vector = [neighbour[n] != active_agent[n] for n in range(len(
-            neighbour))]
+        diff_vector = [neighbour[n] != active_agent[1][n] for n in range(
+            len(neighbour))]
         # get a list of traits for each feature in which they differ
         diff_traits = [index for index in range(
             len(diff_vector)) if diff_vector[index] == 1]
+        # print(active_agent, neighbour, diff_vector, diff_traits)
         # compute the probability they will interact
         prob = (self.no_features-len(diff_traits))/self.no_features
         # if they do interact then substitute one of the agent's differing
         # traits by picking a random one from the neighbours
         if random.random() <= prob and diff_traits != []:
             index = random.choice(diff_traits)
-            active_agent[index] = neighbour[index]
+            active_agent[1][index] = neighbour[index]
             mutations.append([(active_agent_row, active_agent_column),
                              active_agent])
             self.total_updates += 1
         return self.lattice, mutations, self.total_updates
 
-    def get_list(self):
-        return list(self.lattice)
-
     def get_culture_count(self):
-        return Counter(str(culture)
+        return Counter(str(culture[1])
                        for row in self.lattice for culture in row)
 
     def get_cumulative_mutations(self):
@@ -170,9 +173,9 @@ class Lattice(object):
         """
         for row in range(self.size):
             for column in range(self.size):
-                neighbours = self.get_agent_neighbours(
-                             row, column, self.lattice)
-                active_agent = self.lattice[row][column]
+                neighbours = [neighbour[1] for neighbour in
+                              self.get_agent_neighbours(row, column)]
+                active_agent = self.lattice[row][column][1]
                 for neighbour in neighbours:
                     # does every neighbour of the agent's differ
                     # in one or more but not all traits?
