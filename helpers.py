@@ -45,12 +45,10 @@ def make_color_snapshot(model):
 def generate_graph(model):
     G = nx.Graph()
     g = model.lattice
-    n = 0
     for row in range(len(g)):
         for col in range(len(g[row])):
-            n += 1
             agent = g[row][col]
-            G.add_node(n, culture=agent, position=(row, col))
+            G.add_node(agent[0], culture=agent[1])
     """
     plt.figure()
     nx.draw(G, with_labels=True)
@@ -59,24 +57,44 @@ def generate_graph(model):
     return G
 
 
-model = Lattice(4, 2, 3)
-model.initialize()
-g = generate_graph(model)
+def add_edges(g):
 
-positions_dic = nx.get_node_attributes(g, 'position')
-cultures_dic = nx.get_node_attributes(g, 'culture')
-neighbor_dic = {}
-for node in g.nodes:
-    neighbor_dic[node] = model.get_agent_neighbours(
-        positions_dic[node][0], positions_dic[node][1], model.lattice)
-print(neighbor_dic)
-weights = {}
-for agent in g.nodes:
-    # map agent to neighbours with attribute weight
-    # so a dict with key = agent and values = [neighbour, weight] will do
-    # how to get neighbour position??????
-    """
-    culture = cultures_dic[agent]
-    neighbour_cultures = neighbor_dic[agent]
-    for neighbour in neighbour_cultures:
-    """
+    node_culture = nx.get_node_attributes(g, 'culture')
+    neighbor_dic = {}
+
+    for node in g.nodes:
+        neighbor_dic[node] = model.get_agent_neighbours(
+            node[0], node[1])
+
+    for node in neighbor_dic:
+        neighbours = neighbor_dic[node]
+        for neighbour in neighbours:
+            # print(node_culture[neighbour])
+            agent = node_culture[node]
+            target = node_culture[neighbour[0]]
+            weight = sum([agent[n] == target[n] for n in range(len(agent))])
+        if weight > 0 and weight < model.no_features:
+            g.add_edge(node, neighbour[0], weight=weight)
+
+
+model = Lattice(10, 30, 16)
+model.initialize()
+
+
+g = generate_graph(model)
+add_edges(g)
+print(nx.info(g))
+
+plt.figure()
+nx.draw(g, with_labels=True)
+plt.show()
+
+while not model.equilibrium() is True:
+    model.update()
+g = generate_graph(model)
+add_edges(g)
+print(nx.info(g))
+
+plt.figure()
+nx.draw(g, with_labels=True)
+plt.show()
