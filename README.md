@@ -40,3 +40,5 @@ The model will then run and keep iterating until no changes are possible. The ch
 The original code can be found at https://github.com/bsassoli/axelrod.
 
 The real time streaming of the data in `chart.js` consists of code modified from the following [GitHub repo](https://github.com/roniemartinez/real-time-charts-with-flask).
+
+(Last modified Jul 12th 2022)
